@@ -5,4 +5,5 @@ document.addEventListener('DOMContentLoaded', () => {
   // Add recipe form
   const forms = document.querySelectorAll('.side-form');
   M.Sidenav.init(forms, {edge: 'left'});
+  // console.log('UI Loaded');
 });

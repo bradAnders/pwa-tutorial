@@ -56,22 +56,22 @@ self.addEventListener('activate', e => {
 });
 
 // Fetch events
-self.addEventListener('fetch', e => {
-  // console.log('fetch event', e);
-  e.respondWith(
-    caches.match(e.request).then(cacheResponse => {
-      return cacheResponse || fetch(e.request).then(fetchResponse => {
-        return caches.open(dynamicCacheName).then(cache => {
-          cache.put(e.request.url, fetchResponse.clone());
-          limitCacheSize(dynamicCacheName, dynamicCacheSizeLimit);
-          console.log('dynamically cached', e.request.url);
-          return fetchResponse;
-        })
-      });
-    }).catch(err => {
-      if (e.request.url.indexOf('.html') > -1) {
-        return caches.match('/pages/fallback.html');
-      }
-    })
-  );
-});
+// self.addEventListener('fetch', e => {
+//   // console.log('fetch event', e);
+//   e.respondWith(
+//     caches.match(e.request).then(cacheResponse => {
+//       return cacheResponse || fetch(e.request).then(fetchResponse => {
+//         return caches.open(dynamicCacheName).then(cache => {
+//           cache.put(e.request.url, fetchResponse.clone());
+//           limitCacheSize(dynamicCacheName, dynamicCacheSizeLimit);
+//           console.log('dynamically cached', e.request.url);
+//           return fetchResponse;
+//         })
+//       });
+//     }).catch(err => {
+//       if (e.request.url.indexOf('.html') > -1) {
+//         return caches.match('/pages/fallback.html');
+//       }
+//     })
+//   );
+// });

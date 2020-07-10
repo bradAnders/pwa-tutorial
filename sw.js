@@ -1,5 +1,6 @@
 const staticCacheName = "site-static-v1";
 const dynamicCacheName = "site-dynamic-v1";
+const dynamicCacheSizeLimit = 15;
 const assets = [
   '/',
   '/index.html',
@@ -10,9 +11,21 @@ const assets = [
   '/css/styles.css',
   '/css/materialize.min.css',
   '/img/dish.png',
+  '/manifest.json',
   'https://fonts.googleapis.com/icon?family=Material+Icons',
   'https://fonts.gstatic.com/s/materialicons/v53/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2',
 ];
+
+// Cache size limit
+const limitCacheSize = (name, size) => {
+  caches.open(name).then(cache => {
+    cache.keys().then(keys => {
+      if (keys.length >  size) {
+        cache.delete(keys[0]).then(limitCacheSize(name, size))
+      }
+    })
+  })
+};
 
 // Install service workers
 self.addEventListener('install', e => {
@@ -50,10 +63,15 @@ self.addEventListener('fetch', e => {
       return cacheResponse || fetch(e.request).then(fetchResponse => {
         return caches.open(dynamicCacheName).then(cache => {
           cache.put(e.request.url, fetchResponse.clone());
+          limitCacheSize(dynamicCacheName, dynamicCacheSizeLimit);
           console.log('dynamically cached', e.request.url);
           return fetchResponse;
         })
       });
-    }).catch(err => caches.match('/pages/fallback.html'))
+    }).catch(err => {
+      if (e.request.url.indexOf('.html') > -1) {
+        return caches.match('/pages/fallback.html');
+      }
+    })
   );
 });
